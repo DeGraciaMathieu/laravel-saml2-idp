@@ -10,6 +10,9 @@ use LightSaml\Model\Protocol\AuthnRequest;
 
 class SamlHttpTest extends TestCase
 {
+    use DatabaseMigrations;
+    use DatabaseTransactions;
+
     public function testBasicTest()
     {
         $response = $this->get('/');
