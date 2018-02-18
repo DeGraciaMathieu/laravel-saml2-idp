@@ -27,26 +27,32 @@ class ManageResponse {
     {
         $response = new Response();
 
-        $this->setBasicInformations($response, $message, $client);
+        $this->setBasicInformations($response);
+        $this->setRequestInformations($response, $message);
+        $this->setClientInformations($response, $client);
         $this->setSignature($response);
         $this->setAssertions($response);
 
         return $response;
     }   
 
-    protected function setBasicInformations(&$response, $message, $client)
+    protected function setBasicInformations(&$response)
     {
         $response->setID(Helper::generateID());
         $response->setIssueInstant(new \DateTime());
         $response->setIssuer(new Issuer('idp_issuer'));
+        $response->setStatus(new Status(new StatusCode(SamlConstants::STATUS_SUCCESS)));;
+    }
 
-        $response->setDestination($client->endpoint);
-        //$response->setDestination('http://sp.dev/test/consume');
-
+    protected function setRequestInformations(&$response, $message)
+    {
         $response->setInResponseTo($message->getID());
         $response->setRelayState($message->getRelayState());
+    }
 
-        $response->setStatus(new Status(new StatusCode(SamlConstants::STATUS_SUCCESS)));;
+    protected function setClientInformations(&$response, $client)
+    {
+        $response->setDestination($client->endpoint);        
     }
 
     protected function setSignature(&$response)
