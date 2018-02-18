@@ -9,16 +9,16 @@ class SamlController extends Controller
 {
     public function consumeRequest(Request $request)
     {
-        return app('App\Services\Saml')->consume($request);
+        return app('App\Services\Saml\SamlService')->consume($request);
     }
 
     public function proceedConnexion(Requests\ProceedConnexionRequest $request)
     {
-        if ($message = app('App\Services\Saml')->getSavedmessage()) {
+        if ($message = app('App\Services\Saml\SamlService')->getSavedmessage()) {
 
-            app('App\Services\Saml')->deleteSavedmessage();
+            app('App\Services\Saml\SamlService')->deleteSavedmessage();
 
-            return app('App\Services\Saml')->consumeMessage($message);
+            return app('App\Services\Saml\SamlService')->consumeMessage($message);
         }
 
         return redirect('home');

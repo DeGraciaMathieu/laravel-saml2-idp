@@ -7,46 +7,50 @@ use LightSaml\Model\Protocol\SamlMessage;
 
 class SamlService {
 
-	protected $manageRequest;
-	protected $manageResponse;
-	protected $manageMessage;
+    protected $manageRequest;
+    protected $manageResponse;
+    protected $manageMessage;
+    protected $manageClient;
 
-	public function __construct(ManageRequest $manageRequest, ManageResponse $manageResponse, ManageMessage $manageMessage)
-	{
-		$this->manageRequest = $manageRequest;
-		$this->manageResponse = $manageResponse;
-		$this->manageMessage = $manageMessage;
-	}
+    public function __construct(ManageRequest $manageRequest, ManageResponse $manageResponse, ManageMessage $manageMessage, ManageClient $manageClient)
+    {
+        $this->manageRequest = $manageRequest;
+        $this->manageResponse = $manageResponse;
+        $this->manageMessage = $manageMessage;
+        $this->manageClient = $manageClient;
+    }
 
-	public function consume(Request $request)
-	{
-		$message = $this->manageRequest->deserialize($request);
+    public function consume(Request $request)
+    {
+        $message = $this->manageRequest->deserialize($request);
 
-		$this->manageMessage->save($message);
+        $this->manageMessage->save($message);
 
-		return $this->consumeMessage($message);
-	}
+        return $this->consumeMessage($message);
+    }
 
-	public function consumeMessage(SamlMessage $message)
-	{
-		// validate sign
+    public function consumeMessage(SamlMessage $message)
+    {
+        // validate sign
 
         if (auth()->guest()) {
             return redirect()->route('login');
         }
-        
-		$response = $this->manageResponse->prepare($message);
 
-		return $this->manageResponse->build($response);
-	}
+        $client = $this->manageClient->getByIssuer($message);
 
-	public function getSavedmessage()
-	{
-		return $this->manageMessage->getSaved();
-	}
+        $response = $this->manageResponse->prepare($message, $client);
 
-	public function deleteSavedmessage()
-	{
-		$this->manageMessage->deleteSaved();
-	}	
+        return $this->manageResponse->build($response);
+    }
+
+    public function getSavedmessage()
+    {
+        return $this->manageMessage->getSaved();
+    }
+
+    public function deleteSavedmessage()
+    {
+        $this->manageMessage->deleteSaved();
+    }	
 }

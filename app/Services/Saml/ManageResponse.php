@@ -23,26 +23,25 @@ use LightSaml\Model\Assertion\AudienceRestriction;
 
 class ManageResponse {
 
-    public function prepare($message)
+    public function prepare($message, $client)
     {
-        $user = auth()->user();
-
         $response = new Response();
 
-        $this->setBasicInformations($response, $message);
+        $this->setBasicInformations($response, $message, $client);
         $this->setSignature($response);
         $this->setAssertions($response);
 
         return $response;
     }   
 
-    protected function setBasicInformations(&$response, $message)
+    protected function setBasicInformations(&$response, $message, $client)
     {
         $response->setID(Helper::generateID());
         $response->setIssueInstant(new \DateTime());
         $response->setIssuer(new Issuer('idp_issuer'));
 
-        $response->setDestination('http://sp.dev/test/consume');
+        $response->setDestination($client->endpoint);
+        //$response->setDestination('http://sp.dev/test/consume');
 
         $response->setInResponseTo($message->getID());
         $response->setRelayState($message->getRelayState());
@@ -68,7 +67,7 @@ class ManageResponse {
 
         $assertion->addItem(
             (new AttributeStatement())
-                ->addAttribute((new Attribute(ClaimTypes::PPID, 1))->setFriendlyName('id'))
+                ->addAttribute((new Attribute(ClaimTypes::PPID, auth()->user()->id))->setFriendlyName('id'))
         );
 
         $assertion->addItem(
