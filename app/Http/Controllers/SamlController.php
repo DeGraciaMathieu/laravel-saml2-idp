@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use SamlService;
 use App\Http\Requests;
 use Illuminate\Http\Request;
 
@@ -9,16 +10,16 @@ class SamlController extends Controller
 {
     public function consumeRequest(Request $request)
     {
-        return app('App\Services\Saml\SamlService')->consume($request);
+        return SamlService::consume($request);
     }
 
     public function proceedConnexion(Requests\ProceedConnexionRequest $request)
     {
-        if ($message = app('App\Services\Saml\SamlService')->getSavedmessage()) {
+        if ($message = SamlService::getSavedmessage()) {
 
-            app('App\Services\Saml\SamlService')->deleteSavedmessage();
+            SamlService::deleteSavedmessage();
 
-            return app('App\Services\Saml\SamlService')->consumeMessage($message);
+            return SamlService::consumeMessage($message);
         }
 
         return redirect('home');
