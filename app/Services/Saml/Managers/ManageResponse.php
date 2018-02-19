@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Saml;
+namespace App\Services\Saml\Managers;
 
 use LightSaml\Helper;
 use LightSaml\ClaimTypes;
@@ -57,7 +57,7 @@ class ManageResponse {
 
     protected function setSignature(&$response)
     {
-
+        //
     }
 
     protected function setAssertions(&$response)

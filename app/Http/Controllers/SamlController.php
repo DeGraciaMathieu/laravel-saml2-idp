@@ -17,9 +17,11 @@ class SamlController extends Controller
     {
         if ($message = SamlService::getSavedmessage()) {
 
-            SamlService::deleteSavedmessage();
+            $client = SamlService::getClientByMessage($message);
 
-            return SamlService::consumeMessage($message);
+            SamlService::deleteSavedMessage();
+
+            return SamlService::consumeMessage($message, $client);
         }
 
         return redirect('home');

@@ -1,8 +1,11 @@
 <?php
 
-namespace App\Services\Saml;
+namespace App\Services\Saml\Managers;
 
+use Exception;
+use App\Client;
 use LightSaml\Model\Protocol\SamlMessage;
+use App\Services\Saml\SamlServiceConstants;
 
 class ManageMessage {
 
@@ -19,5 +22,5 @@ class ManageMessage {
 	public function deleteSaved()
 	{
 		session()->forget(SamlServiceConstants::SAVED_MESSAGE);
-	}	
+	}
 }
