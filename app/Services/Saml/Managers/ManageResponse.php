@@ -2,6 +2,7 @@
 
 namespace App\Services\Saml\Managers;
 
+use App\Client;
 use LightSaml\Helper;
 use LightSaml\ClaimTypes;
 use LightSaml\SamlConstants;
@@ -14,6 +15,7 @@ use LightSaml\Model\Protocol\Response;
 use LightSaml\Model\Assertion\Assertion;
 use LightSaml\Model\Assertion\Attribute;
 use LightSaml\Model\Protocol\StatusCode;
+use LightSaml\Model\Protocol\SamlMessage;
 use LightSaml\Model\Assertion\Conditions;
 use LightSaml\Model\Assertion\AuthnContext;
 use LightSaml\Context\Profile\MessageContext;
@@ -23,7 +25,13 @@ use LightSaml\Model\Assertion\AudienceRestriction;
 
 class ManageResponse {
 
-    public function prepare($message, $client)
+    /**
+    * Get the saved SAML Message
+    * @param \LightSaml\Model\Protocol\SamlMessage $message
+    * @param \App\Client $client
+    * @return
+    */
+    public function prepare(SamlMessage $message, Client $client)
     {
         $response = new Response();
 
@@ -36,6 +44,10 @@ class ManageResponse {
         return $response;
     }   
 
+    /**
+    * 
+    * @param \LightSaml\Model\Protocol\Response &$response
+    */
     protected function setBasicInformations(&$response)
     {
         $response->setID(Helper::generateID());
@@ -44,22 +56,40 @@ class ManageResponse {
         $response->setStatus(new Status(new StatusCode(SamlConstants::STATUS_SUCCESS)));;
     }
 
+    /**
+    * 
+    * @param \LightSaml\Model\Protocol\Response &$response
+    * @param \LightSaml\Model\Protocol\SamlMessage $message
+    */
     protected function setRequestInformations(&$response, $message)
     {
         $response->setInResponseTo($message->getID());
         $response->setRelayState($message->getRelayState());
     }
 
+    /**
+    * 
+    * @param \LightSaml\Model\Protocol\Response &$response
+    * @param \App\Client $client
+    */
     protected function setClientInformations(&$response, $client)
     {
         $response->setDestination($client->endpoint);        
     }
 
+    /**
+    * 
+    * @param \LightSaml\Model\Protocol\Response &$response
+    */
     protected function setSignature(&$response)
     {
         //
     }
 
+    /**
+    * 
+    * @param \LightSaml\Model\Protocol\Response &$response
+    */
     protected function setAssertions(&$response)
     {
         $response->addAssertion($assertion = new Assertion());
@@ -73,7 +103,12 @@ class ManageResponse {
 
         $assertion->addItem(
             (new AttributeStatement())
-                ->addAttribute((new Attribute(ClaimTypes::PPID, auth()->user()->id))->setFriendlyName('id'))
+                ->addAttribute((new Attribute(ClaimTypes::PPID, auth()->user()->uuid))->setFriendlyName('uuid'))
+        );
+
+        $assertion->addItem(
+            (new AttributeStatement())
+                ->addAttribute((new Attribute(ClaimTypes::EMAIL_ADDRESS, auth()->user()->email))->setFriendlyName('email'))
         );
 
         $assertion->addItem(
@@ -84,6 +119,10 @@ class ManageResponse {
         );
     }
 
+    /**
+    * 
+    * @param \LightSaml\Model\Protocol\SamlMessage $message
+    */
     public function build($message)
     {
         $bindingFactory = new BindingFactory();
