@@ -29,14 +29,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(SamlService::class, function ($app) {
-            return new SamlService(
-                new ManageRequest, 
-                new ManageResponse, 
-                new ManageMessage, 
-                new ManageClient, 
-                new ManageSignature
-            );
+        $this->app->bind(ManageSignature::class, function ($app) {
+            return new ManageSignature();
         });
     }
 }

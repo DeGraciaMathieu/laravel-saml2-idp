@@ -27,5 +27,6 @@ $factory->define(App\Client::class, function (Faker\Generator $faker) {
     return [
         'entity_id' => $faker->unique()->name,
         'endpoint' => $faker->url,
+        'certificate' => base64_encode(time()),
     ];
 });

@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
+use ManageSignature;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -24,6 +25,8 @@ class SamlHttpTest extends TestCase
 
     public function testCallConsumeWithGuestAndSamlRequest()
     {
+        ManageSignature::shouldReceive('validate')->once()->andReturn(null);
+
         $client = factory(\App\Client::class)->create();
 
         $authnRequest = $this->buildRequest($this->getAuthnRequest($client));
@@ -41,6 +44,8 @@ class SamlHttpTest extends TestCase
 
     public function testCallConsumeWithAuthAndSamlRequest()
     {
+        ManageSignature::shouldReceive('validate')->once()->andReturn(null);
+
         $user = factory(\App\User::class)->create();
         $client = factory(\App\Client::class)->create();
 
