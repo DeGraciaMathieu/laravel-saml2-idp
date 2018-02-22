@@ -15,12 +15,16 @@
 Auth::routes();
 
 Route::get('/', function () {
-	return redirect('login');
+    return redirect('login');
 });
 
 Route::get('/home', 'HomeController@index')->middleware(['auth'])->name('home');
 
 Route::prefix('saml')->group(function () {
-	Route::get('consume', 'SamlController@consumeRequest')->name('consume');
-	Route::get('proceed-connexion', 'SamlController@proceedConnexion')->middleware(['auth'])->name('proceedConnexion');
+    Route::get('consume', 'SamlController@consumeRequest')->name('consume');
+    Route::get('proceed-connexion', 'SamlController@proceedConnexion')->middleware(['auth'])->name('proceedConnexion');
+});
+
+Route::prefix('admin')->middleware(['auth'])->group(function () {
+    Route::resource('client', 'Admin\ClientController');
 });
