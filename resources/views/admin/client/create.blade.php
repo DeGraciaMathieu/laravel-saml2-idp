@@ -9,19 +9,14 @@
               <li><a href="{{ route('client.index') }}">Clients</a></li>
               <li class="active">Create</li>
             </ol>            
+            @if (count($errors) > 0)
+                <div class="alert alert-danger">
+                    <strong>Whoops!</strong> There were some problems with your input.
+                </div>
+            @endif
             <div class="panel panel-default">
                 <div class="panel-heading">Tableau de bord</div>
                 <div class="panel-body">
-                @if (count($errors) > 0)
-                    <div class="alert alert-danger">
-                        <strong>Whoops!</strong> There were some problems with your input.<br><br>
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
                 <form method='POST' action="{{ route('client.store') }}">
                     {!! method_field('POST') !!}
                     <div class="row">
@@ -29,12 +24,22 @@
                             <div class="form-group">
                                 <strong>entity_id:</strong>
                                 <input type="input" name="entity_id" class='form-control' value="{{ old('entity_id') }}">
+                                @if ($errors->has('entity_id'))
+                                    <span class="help-block">
+                                        <strong>{{ $errors->first('entity_id') }}</strong>
+                                    </span>
+                                @endif                                  
                             </div>
                         </div>
                         <div class="col-xs-12 col-sm-12 col-md-12">
                             <div class="form-group">
                                 <strong>endpoint:</strong>
                                 <input type="input" name="endpoint" class='form-control' value="{{ old('endpoint') }}">
+                                @if ($errors->has('endpoint'))
+                                    <span class="help-block">
+                                        <strong>{{ $errors->first('endpoint') }}</strong>
+                                    </span>
+                                @endif                                  
                             </div>
                         </div>                                              
                         <div class="col-xs-12 col-sm-12 col-md-12 text-center">
