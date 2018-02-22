@@ -4,10 +4,10 @@ namespace App\Services\Saml\Managers;
 
 use Exception;
 use App\Client;
+use LightSaml\Credential\KeyHelper;
 use LightSaml\Credential\X509Certificate;
 use LightSaml\Model\Protocol\SamlMessage;
 use App\Exceptions\UnexpectedSignatureException;
-use LightSaml\Credential\KeyHelper;
 
 class ManageSignature {
 
@@ -16,7 +16,7 @@ class ManageSignature {
 		try {
 
 			$X509Certificate = new X509Certificate();
-
+			
 			$certificate = $X509Certificate->setData($client->certificate);
 
 			$publicKey = KeyHelper::createPublicKey($certificate);

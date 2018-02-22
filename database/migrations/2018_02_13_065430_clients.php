@@ -17,6 +17,7 @@ class Clients extends Migration
             $table->increments('id');
             $table->string('entity_id')->unique();
             $table->string('endpoint');
+            $table->string('certificate');
             $table->timestamps();
         });
     }

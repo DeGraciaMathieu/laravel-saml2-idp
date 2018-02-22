@@ -26,6 +26,7 @@ class UpdateClientRequest extends FormRequest
         return [
             'entity_id' => 'required|string',
             'endpoint' => 'required|string|url',
+            'certificate' => 'required|string',
         ];
     }
 }

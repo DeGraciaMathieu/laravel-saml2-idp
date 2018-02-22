@@ -26,6 +26,7 @@ class StoreClientRequest extends FormRequest
         return [
             'entity_id' => 'required|string|unique:clients,entity_id',
             'endpoint' => 'required|string|url',
+            'certificate' => 'required|string',
         ];
     }
 }

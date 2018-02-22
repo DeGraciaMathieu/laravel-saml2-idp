@@ -9,11 +9,6 @@
               <li><a href="{{ route('client.index') }}">Clients</a></li>
               <li class="active">Create</li>
             </ol>            
-            @if (count($errors) > 0)
-                <div class="alert alert-danger">
-                    <strong>Whoops!</strong> There were some problems with your input.
-                </div>
-            @endif
             <div class="panel panel-default">
                 <div class="panel-heading">Tableau de bord</div>
                 <div class="panel-body">
@@ -41,7 +36,18 @@
                                     </span>
                                 @endif                                  
                             </div>
-                        </div>                                              
+                        </div>             
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <div class="form-group {{ $errors->has('certificate') ? 'has-error' : '' }}">
+                                <strong>certificate:</strong>
+                                <textarea name="certificate" class='form-control'>{{ old('certificate') }}</textarea>
+                                @if ($errors->has('certificate'))
+                                    <span class="help-block">
+                                        <strong>{{ $errors->first('certificate') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>                                                            
                         <div class="col-xs-12 col-sm-12 col-md-12 text-center">
                             <button type="submit" class="btn btn-primary">Créer</button>
                         </div>

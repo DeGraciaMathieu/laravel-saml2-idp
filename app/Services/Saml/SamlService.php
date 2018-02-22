@@ -40,7 +40,7 @@ class SamlService {
 
         $client = $this->getClientByMessage($message);
 
-        //$this->manageSignature->validate($message, $client);
+        $this->manageSignature->validate($message, $client);
 
         $this->manageMessage->save($message);
 
