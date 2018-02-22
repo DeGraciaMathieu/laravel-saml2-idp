@@ -21,7 +21,7 @@
                     {!! method_field('POST') !!}
                     <div class="row">
                         <div class="col-xs-12 col-sm-12 col-md-12">
-                            <div class="form-group">
+                            <div class="form-group {{ $errors->has('entity_id') ? 'has-error' : '' }}">
                                 <strong>entity_id:</strong>
                                 <input type="input" name="entity_id" class='form-control' value="{{ old('entity_id') }}">
                                 @if ($errors->has('entity_id'))
@@ -32,7 +32,7 @@
                             </div>
                         </div>
                         <div class="col-xs-12 col-sm-12 col-md-12">
-                            <div class="form-group">
+                            <div class="form-group {{ $errors->has('endpoint') ? 'has-error' : '' }}">
                                 <strong>endpoint:</strong>
                                 <input type="input" name="endpoint" class='form-control' value="{{ old('endpoint') }}">
                                 @if ($errors->has('endpoint'))
