@@ -9,7 +9,7 @@ use App\Services\Saml\Managers\ManageClient;
 use App\Services\Saml\Managers\ManageRequest;
 use App\Services\Saml\Managers\ManageMessage;
 use App\Services\Saml\Managers\ManageResponse;
-use App\Services\Saml\Managers\manageSignature;
+use App\Services\Saml\Managers\ManageSignature;
 
 class SamlService {
 
