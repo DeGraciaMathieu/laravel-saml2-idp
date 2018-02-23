@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Services\Saml\SamlService;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use App\Services\Saml\Managers\ManageClient;
 use App\Services\Saml\Managers\ManageRequest;
@@ -19,7 +20,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Schema::defaultStringLength(191);
     }
 
     /**
