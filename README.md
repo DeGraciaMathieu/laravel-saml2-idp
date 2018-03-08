@@ -1,4 +1,7 @@
-<p>
+<p align="center">
+<img src="http://image.ibb.co/dPjjYH/SSO_Adwim02.png" width="300">
+</p>
+<p align="center">
 <a href="https://www.codacy.com/app/DeGraciaMathieu/Riddler?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=DeGraciaMathieu/Riddler&amp;utm_campaign=Badge_Grade"><img src="https://api.codacy.com/project/badge/Grade/d662a4fa526a4a709d3ad1991cba2533" alt="Codacy Badge"></a>
 <a href='https://scrutinizer-ci.com/g/DeGraciaMathieu/laravel-saml2-idp/?branch=master'>
 <img src='https://scrutinizer-ci.com/g/DeGraciaMathieu/laravel-saml2-idp/badges/quality-score.png?b=master' alt='Scrutinizer Code Quality' />
