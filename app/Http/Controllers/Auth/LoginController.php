@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use SamlService;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
@@ -36,4 +37,21 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
     }
+
+    /**
+     * Show the application's login form.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function showLoginForm()
+    {
+        $endpoint = null;
+
+        if (SamlService::samlRequestIsPending()) {
+
+            $endpoint = SamlService::getPendingSamlRequestEndpoint();
+        }
+
+        return view('auth.login', ['endpoint' => $endpoint]);
+    }    
 }
