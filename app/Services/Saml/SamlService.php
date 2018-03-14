@@ -28,11 +28,13 @@ class SamlService {
 
         $client = Tools\Client::getByEntityId($messageEntity->getIssuer());
 
-        return Tools\Signature::validateSign($signature, $client->certificate);
+        Tools\Signature::validateSignature($signature, $client->certificate);
     }
 
     public function proceedSamlResponse(Message $messageEntity)
     {
+        Tools\Signature::signatureHasBeenVerified($messageEntity);
+
         $client = Tools\Client::getByEntityId($messageEntity->getIssuer());
 
         $response = Tools\Response::prepare($messageEntity, $client);

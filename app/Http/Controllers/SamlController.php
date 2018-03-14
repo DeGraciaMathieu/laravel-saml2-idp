@@ -14,6 +14,8 @@ class SamlController extends Controller
 
         SamlService::checkMessageSignature($message);
 
+        $message->verifiedSignature(true);
+
         SamlService::keepMessage($message);
 
         if (auth()->guest()) {

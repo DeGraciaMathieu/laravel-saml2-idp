@@ -4,12 +4,14 @@ namespace App\Services\Saml\Tools;
 
 use Exception;
 use LightSaml\Credential\KeyHelper;
+use App\Services\Saml\Entities\Message;
 use LightSaml\Credential\X509Certificate;
 use App\Exceptions\UnexpectedSignatureException;
+use App\Exceptions\UnverifiedMessageSignatureException;
 
 class Signature {
 
-    public static function validateSign($signature, $certificate)
+    public static function validateSignature($signature, $certificate)
     {
         try {
 
@@ -21,8 +23,19 @@ class Signature {
 
             $signature->validate($publicKey);
             
+            return true;
+
         } catch (Exception $e) {
             throw new UnexpectedSignatureException();
         }        
     }
+
+    public static function signatureHasBeenVerified(Message $messageEntity)
+    {
+        if (! $messageEntity->getSignatureStatus()) {
+            throw new UnverifiedMessageSignatureException();
+        }  
+
+        return true;
+    }    
 }
