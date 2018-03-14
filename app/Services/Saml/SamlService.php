@@ -10,87 +10,73 @@ use App\Services\Saml\Managers\ManageRequest;
 use App\Services\Saml\Managers\ManageMessage;
 use App\Services\Saml\Managers\ManageResponse;
 use App\Services\Saml\Managers\ManageSignature;
+use App\Services\Saml\Tools;
+use App\Services\Saml\Entities\Message;
 
 class SamlService {
 
-    protected $manageRequest;
-    protected $manageResponse;
-    protected $manageMessage;
-    protected $manageClient;
-    protected $manageSignature;
-
-    public function __construct(ManageRequest $manageRequest, ManageResponse $manageResponse, ManageMessage $manageMessage, ManageClient $manageClient, ManageSignature $manageSignature)
+    public function consumeAuthnRequest(Request $request)
     {
-        $this->manageRequest = $manageRequest;
-        $this->manageResponse = $manageResponse;
-        $this->manageMessage = $manageMessage;
-        $this->manageClient = $manageClient;
-        $this->manageSignature = $manageSignature;
+        $message = Tools\Request::deserializeAuthnRequest($request);
+
+        return new Entities\Message($message);
     }
 
-    /**
-     * Consume SAML AuthnRequest
-     * @param  Request $request [description]
-     * @throws \App\Exceptions\UnexpectedSignatureException
-     * @return [type]           [description]
-     */
-    public function consume(Request $request)
+    public function checkMessageSignature(Message $messageEntity)
     {
-        $message = $this->manageRequest->deserializeAuthnRequest($request);
+        $signature = $messageEntity->getSignature();
 
-        $client = $this->getClientByMessage($message);
+        $client = Tools\Client::getByEntityId($messageEntity->getIssuer());
 
-        $this->manageSignature->validate($message, $client);
-
-        $this->manageMessage->save($message);
-
-        return $this->consumeMessage($message, $client);
+        return Tools\Signature::validateSign($signature, $client->certificate);
     }
 
-    /**
-     * [consumeMessage description]
-     * @param  \LightSaml\Model\Protocol\SamlMessage $message
-     * @param  \App\Client $client
-     * @return [type]               [description]
-     */
-    public function consumeMessage(SamlMessage $message, Client $client)
+    public function proceedSamlResponse(Message $messageEntity)
     {
-        if (auth()->guest()) {
-            return redirect()->route('login');
+        $client = Tools\Client::getByEntityId($messageEntity->getIssuer());
+
+        $response = Tools\Response::prepare($messageEntity, $client);
+
+        return Tools\Response::proceed($response);
+    }
+
+    public function keepMessage(Message $messageEntity)
+    {
+        Tools\Message::save($messageEntity);
+    }
+
+    public function retrievePendingMessage()
+    {
+        $messageEntity = $this->getPendingMessage();
+
+        Tools\Message::deleteSaved();
+
+        return $messageEntity;
+    }    
+
+    public function samlRequestIsPending()
+    {
+        return Tools\Message::hasSaved();
+    }
+
+    public function getPendingSamlRequestEndpoint()
+    {
+        $messageEntity = $this->getPendingMessage(); 
+
+        if (! $messageEntity) {
+            throw new NoPendingSamlRequestException();
         }
 
-        $response = $this->manageResponse->prepare($message, $client);
+        $client = Tools\Client::getByEntityId($messageEntity->getIssuer());
 
-        return $this->manageResponse->build($response);
+        return $client->endpoint;
     }
 
     /**
-     * [getSavedmessage description]
-     * @return void
-     */
-    public function getSavedmessage()
+    * @return \App\Services\Saml\Entities\Message
+    */
+    protected function getPendingMessage()
     {
-        return $this->manageMessage->getSaved();
-    }
-
-    /**
-     * [getSavedmessage description]
-     * @return void
-     */
-    public function deleteSavedMessage()
-    {
-        $this->manageMessage->deleteSaved();
-    }	
-
-    /**
-     * [getClientByMessage description]
-     * @param  \LightSaml\Model\Protocol\SamlMessage $message
-     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
-     * @throws \App\Exceptions\MissingIssuerException
-     * @return \App\Client
-     */
-    public function getClientByMessage(SamlMessage $message)
-    {
-        return $this->manageClient->getByMessageIssuer($message);
-    }
+        return Tools\Message::getSaved();
+    }  
 }
