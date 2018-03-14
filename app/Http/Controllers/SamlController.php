@@ -10,18 +10,24 @@ class SamlController extends Controller
 {
     public function consumeRequest(Request $request)
     {
-        return SamlService::consume($request);
+        $message = SamlService::consumeAuthnRequest($request);
+
+        SamlService::checkMessageSignature($message);
+
+        SamlService::keepMessage($message);
+
+        if (auth()->guest()) {
+            return redirect()->route('login');
+        }
+
+        return SamlService::proceedSamlResponse($message);       
     }
 
     public function proceedConnexion(Requests\ProceedConnexionRequest $request)
-    {
-        if ($message = SamlService::getSavedmessage()) {
+    {   
+        if ($message = SamlService::retrievePendingMessage()) {
 
-            $client = SamlService::getClientByMessage($message);
-
-            SamlService::deleteSavedMessage();
-
-            return SamlService::consumeMessage($message, $client);
+            return SamlService::proceedSamlResponse($message);
         }
 
         return redirect('home');
