@@ -5,6 +5,7 @@ namespace App\Providers;
 use Auth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
+use App\Services\Auth\CustomUserProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,6 +26,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        Auth::provider('custom', function($app, array $config) {
+            return new CustomUserProvider($app['hash'], $config['model']);
+        });
     }
 }
+
+
