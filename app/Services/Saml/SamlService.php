@@ -2,19 +2,17 @@
 
 namespace App\Services\Saml;
 
-use App\Client;
 use Illuminate\Http\Request;
-use LightSaml\Model\Protocol\SamlMessage;
-use App\Services\Saml\Managers\ManageClient;
-use App\Services\Saml\Managers\ManageRequest;
-use App\Services\Saml\Managers\ManageMessage;
-use App\Services\Saml\Managers\ManageResponse;
-use App\Services\Saml\Managers\ManageSignature;
 use App\Services\Saml\Tools;
 use App\Services\Saml\Entities\Message;
 
 class SamlService {
 
+    /**
+     * Consumes a saml request
+     * @param  \Illuminate\Http\Request $request
+     * @return \App\Services\Saml\Entities\Message
+     */
     public function consumeAuthnRequest(Request $request)
     {
         $message = Tools\Request::deserializeAuthnRequest($request);
@@ -22,6 +20,11 @@ class SamlService {
         return new Entities\Message($message);
     }
 
+    /**
+     * Verify the signature of a message
+     * @param  \App\Services\Saml\Entities\Message $messageEntity
+     * @return void
+     */
     public function checkMessageSignature(Message $messageEntity)
     {
         $signature = $messageEntity->getSignature();
@@ -31,6 +34,11 @@ class SamlService {
         Tools\Signature::validateSignature($signature, $client->certificate);
     }
 
+    /**
+     * Sends a Saml response from a message
+     * @param  \App\Services\Saml\Entities\Message $messageEntity
+     * @return \LightSaml\Binding\SamlPostResponse
+     */
     public function proceedSamlResponse(Message $messageEntity)
     {
         Tools\Signature::signatureHasBeenVerified($messageEntity);
@@ -42,11 +50,20 @@ class SamlService {
         return Tools\Response::proceed($response);
     }
 
+    /**
+     * Keep a message in session
+     * @param  \App\Services\Saml\Entities\Message $messageEntity
+     * @return void
+     */
     public function keepMessage(Message $messageEntity)
     {
         Tools\Message::save($messageEntity);
     }
 
+    /**
+     * Retrieve and delete a message saved in session
+     * @return \App\Services\Saml\Entities\Message
+     */
     public function retrievePendingMessage()
     {
         $messageEntity = $this->getPendingMessage();
@@ -56,17 +73,26 @@ class SamlService {
         return $messageEntity;
     }    
 
+    /**
+     * Check if a message is saved in session
+     * @return boolean
+     */
     public function samlRequestIsPending()
     {
         return Tools\Message::hasSaved();
     }
 
+    /**
+     * Get the endpoint of a message saved in session
+     * @throws \App\Exceptions\NeitherSessionMessage
+     * @return [type] [description]
+     */
     public function getPendingSamlRequestEndpoint()
     {
         $messageEntity = $this->getPendingMessage(); 
 
         if (! $messageEntity) {
-            throw new NoPendingSamlRequestException();
+            throw new NeitherSessionMessage();
         }
 
         $client = Tools\Client::getByEntityId($messageEntity->getIssuer());
@@ -75,6 +101,7 @@ class SamlService {
     }
 
     /**
+    * Retrieve a message saved in session 
     * @return \App\Services\Saml\Entities\Message
     */
     protected function getPendingMessage()
