@@ -20,11 +20,12 @@ Route::get('/', function () {
 
 Route::get('/home', 'HomeController@index')->middleware(['auth'])->name('home');
 
-Route::prefix('saml')->group(function () {
+Route::namespace('Guest')->prefix('saml')->group(function () {
     Route::get('consume', 'SamlController@consumeRequest')->name('consume');
     Route::get('proceed-connexion', 'SamlController@proceedConnexion')->middleware(['auth'])->name('proceedConnexion');
 });
 
-Route::prefix('admin')->middleware(['auth'])->group(function () {
-    Route::resource('client', 'Admin\ClientController');
+Route::namespace('Admin')->prefix('admin')->middleware(['auth'])->group(function () {
+    Route::resource('client', 'ClientController');
+    Route::resource('user', 'UserController', ['except' => ['store', 'create']]);
 });
