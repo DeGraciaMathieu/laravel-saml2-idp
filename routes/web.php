@@ -20,7 +20,7 @@ Route::get('/', function () {
 
 Route::get('/home', 'HomeController@index')->middleware(['auth'])->name('home');
 
-Route::namespace('Guest')->prefix('saml')->group(function () {
+Route::prefix('saml')->group(function () {
     Route::get('consume', 'SamlController@consumeRequest')->name('consume');
     Route::get('proceed-connexion', 'SamlController@proceedConnexion')->middleware(['auth'])->name('proceedConnexion');
 });
